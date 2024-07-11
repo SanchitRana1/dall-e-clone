@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import FormField from "../components/FormField";
 import Loader from "../components/Loader";
+import RenderCards from "../components/RenderCards";
+
+
 
 const Home = () => {
   const [loading, setLoading] = useState(false);
@@ -34,6 +37,10 @@ const Home = () => {
             )}
           </>
         )}
+
+        <div className="grid lg:grid-cols-4 sm:grid-cols-3 xs:sm:grid-cols-2 grid-col-1 gap-3">
+            {searchText ? <RenderCards data={[]} title="No Posts found"/> :<RenderCards data={[]} title="noPostsFound"/>}
+        </div>
       </div>
     </section>
   );
