@@ -38,7 +38,6 @@ export async function downloadImage(_id,photo){
       throw new Error('Network response was not ok');
     }
     const blob = await response.blob();
-    console.log(blob)
     const fileType = response.headers.get('content-type') || 'image/jpeg';
     const file = new Blob([blob], { type: fileType });
     FileSaver.saveAs(file, `download-${_id}.jpg`);
