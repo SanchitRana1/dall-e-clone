@@ -7,7 +7,7 @@ import dallERoutes from "./routes/dallERoutes.js";
 
 
 const app = express();
-app.use(express.json()); // whenever accepting json data from user
+app.use(express.json({limit:"50mb"})); // whenever accepting json data from user
 app.use(cors());
 dotenv.config(); //get variables from .env file
 

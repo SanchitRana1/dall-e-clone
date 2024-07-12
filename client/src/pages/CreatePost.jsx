@@ -4,6 +4,7 @@ import { preview } from "../assets";
 import FormField from "../components/FormField";
 import Loader from "../components/Loader";
 import { getRandomPrompts } from "../utils/getRandomPrompts";
+import { DALL_E_URL, POST_URL } from "../constants";
 
 const CreatePost = () => {
   const navigate = useNavigate();
@@ -15,7 +16,32 @@ const CreatePost = () => {
   const [generatingImg, setGeneratingImg] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleFormSubmit = () => {};
+  const handleFormSubmit = async(e) => {
+    e.preventDefault();
+    if(form?.prompt && form?.photo){
+      setLoading(true)
+      try {
+        const response = await fetch(POST_URL,{
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(form) 
+        })
+
+        await response.json();
+        navigate("/")
+
+      } catch (error) {
+        alert(error)
+      } finally{
+        setLoading(false)
+      }
+    }
+    else{
+      alert("Please enter a prompt")
+    }
+  };
   const handleFieldChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -27,7 +53,7 @@ const CreatePost = () => {
     if (form?.prompt) {
       try {
         setGeneratingImg(true);
-        const response = await fetch("http://localhost:5000/api/v1/dall-e", {
+        const response = await fetch(DALL_E_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -43,7 +69,7 @@ const CreatePost = () => {
         setGeneratingImg(false)
       }
     }else{
-      alert("Please enter a prompt")
+      alert("Please enter a prompt");
     }
   };
 
@@ -116,7 +142,7 @@ const CreatePost = () => {
             className="mt-3 text-white bg-[#6469ff] font-medium rounded-md px-5 py-2.5 text-sm w-full sm:w-auto text-center"
             type="submit"
           >
-            {loading ? "Sharing.." : "Share with the community"}
+            {loading ? "Sharing..." : "Share with the community"}
           </button>
         </div>
       </form>

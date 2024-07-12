@@ -1,14 +1,50 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FormField from "../components/FormField";
 import Loader from "../components/Loader";
 import RenderCards from "../components/RenderCards";
-
-
+import { POST_URL } from "../constants";
 
 const Home = () => {
   const [loading, setLoading] = useState(false);
   const [allPosts, setAllPosts] = useState(null);
-  const [searchText, setSearchText] = useState("asdas");
+  const [searchText, setSearchText] = useState("");
+  const [searchedResults, setSearchedResults] = useState(null);
+  
+  const [searchTimeout, setSearchTimeout] = useState(null);
+
+
+  const handleSearchChange = (e) => {
+    clearTimeout(searchTimeout)
+    setSearchText(e.target.value);
+    setSearchTimeout(
+      setTimeout(() => {
+        const searchResults = allPosts.filter((item) => {
+          return item.name.toLowerCase().includes(searchText.toLowerCase()) ||
+          item.prompt.toLowerCase().includes(searchText.toLowerCase());
+        });
+        setSearchedResults(searchResults)
+      }, 500)
+    )
+  };
+
+  const getAllPosts = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(POST_URL);
+
+      const data = await response.json();
+      setAllPosts(data?.data.reverse());
+    } catch (error) {
+      alert(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getAllPosts();
+  }, []);
+
   return (
     <section className="max-w-7xl mx-auto">
       <div className="">
@@ -21,7 +57,14 @@ const Home = () => {
         </p>
       </div>
       <div className="mt-16">
-        <FormField />
+        <FormField
+          labelName="Search posts"
+          type="text"
+          name="name"
+          placeholder="Search posts"
+          value={searchText}
+          handleChange={handleSearchChange}
+        />
       </div>
       <div className="mt-10">
         {loading ? (
@@ -32,14 +75,19 @@ const Home = () => {
           <>
             {searchText && (
               <h2 className="font-medium text-[#666e75] text-xl mb-3">
-                Showing results for <span className="text-[#222382]">{searchText}</span>
+                Showing results for{" "}
+                <span className="text-[#222382]">{searchText}</span>
               </h2>
             )}
           </>
         )}
 
         <div className="grid lg:grid-cols-4 sm:grid-cols-3 xs:sm:grid-cols-2 grid-col-1 gap-3">
-            {searchText ? <RenderCards data={[]} title="No Posts found"/> :<RenderCards data={[]} title="noPostsFound"/>}
+          {searchText ? (
+            <RenderCards data={searchedResults} title="No Search result found" />
+          ) : (
+            <RenderCards data={allPosts} title="No Posts Found" />
+          )}
         </div>
       </div>
     </section>
