@@ -18,6 +18,6 @@ const PostSchema = new mongoose.Schema(
   { timeStamp: true }
 );
 
-export const Post = mongoose.model("Note", PostSchema);
+export const Post = mongoose.model("Post", PostSchema);
 
 
